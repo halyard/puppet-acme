@@ -1,0 +1,8 @@
+[Unit]
+Description=Run ACME renewals
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/certs/renew_all
+

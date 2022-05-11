@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+for certpath in $(/usr/bin/find /opt/certs -type d -maxdepth 1 -mindepth 1) ; do
+  /opt/acme/acme.sh --config-home "${certpath}" --renew-all
+done
