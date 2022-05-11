@@ -14,6 +14,8 @@ define acme::certificate (
   Optional[String] $challengealias = undef,
   String $hostname = $title,
 ) {
+  include acme
+
   file { ["/opt/certs/${hostname}", "/opt/certs/${hostname}/${hostname}"]:
     ensure => directory,
   }
