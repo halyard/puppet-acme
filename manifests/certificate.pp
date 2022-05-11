@@ -27,6 +27,10 @@ define acme::certificate (
     notify  => Exec["acme-${hostname}-renew"],
   }
 
+  file { "/opt/certs/${hostname}/${hostname}/${hostname}.conf":
+    ensure => file,
+  }
+
   file_line { "acme-${hostname}-domain":
     ensure => present,
     path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
