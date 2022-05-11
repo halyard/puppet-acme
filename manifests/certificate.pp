@@ -10,7 +10,7 @@ define acme::certificate (
   String $reloadcmd,
   String $keypath,
   String $fullchainpath,
-  String $account = '',
+  Optional[String] $account = undef,
   Optional[String] $challengealias = undef,
   String $hostname = $title,
 ) {
@@ -22,6 +22,7 @@ define acme::certificate (
     ensure  => file,
     mode    => '0400',
     content => $account,
+    notify  => Exec["acme-${hostname}-renew"],
   }
 
   file_line { "acme-${hostname}-domain":
@@ -48,11 +49,11 @@ define acme::certificate (
     notify => Exec["acme-${hostname}-renew"],
   }
 
-  if $challenge_alias {
+  if $challengealias {
     file_line { "acme-${hostname}-challengealias":
       ensure => present,
       path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-      line   => "Le_ChallengeAlias='$challenge_alias,'",
+      line   => "Le_ChallengeAlias='${challengealias},'",
       match  => '^Le_ChallengeAlias=',
       notify => Exec["acme-${hostname}-renew"],
     }
@@ -85,8 +86,8 @@ define acme::certificate (
   }
 
   exec { "acme-${hostname}-renew":
-    command => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force",
-    refreshonly = true,
+    command     => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force",
+    refreshonly => true,
   }
 
   -> exec { "acme-${hostname}-issue":
