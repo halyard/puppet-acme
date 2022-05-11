@@ -1,6 +1,6 @@
 {
   "name": "halyard-acme",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Les Aker",
   "license": "MIT",
   "summary": "Configure ACME TLS certificates",
@@ -8,10 +8,10 @@
   "project_page": "https://github.com/halyard/puppet-acme",
   "issues_url": "https://github.com/halyard/puppet-acme/issues",
   "dependencies": [
-      {
-          "name": "puppetlabs/vcsrepo",
-          "version_requirement": ">= 5.0.0 < 6.0.0"
-      }
+    {
+      "name": "puppetlabs/vcsrepo",
+      "version_requirement": ">= 5.0.0 < 6.0.0"
+    }
   ],
   "operatingsystem_support": [
 
