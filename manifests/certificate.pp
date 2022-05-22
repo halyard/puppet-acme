@@ -124,13 +124,13 @@ define acme::certificate (
   }
 
   exec { "acme-${hostname}-renew":
-    command     => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force",
+    command     => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all",
     path        => '/usr/bin',
     refreshonly => true,
   }
 
   -> exec { "acme-${hostname}-issue":
-    command => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force",
+    command => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all",
     path    => '/usr/bin',
     creates => "/opt/certs/${hostname}/${hostname}/${hostname}.cer",
   }
