@@ -39,30 +39,6 @@ define acme::certificate (
     notify => Exec["acme-${hostname}-renew"],
   }
 
-  file_line { "acme-${hostname}-orderfinalize":
-    ensure => present,
-    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-    line   => "Le_OrderFinalize='https://acme-v02.api.letsencrypt.org/acme/finalize/554069336/90785049486'",
-    match  => '^Le_OrderFinalize=',
-    notify => Exec["acme-${hostname}-renew"],
-  }
-
-  file_line { "acme-${hostname}-linkorder":
-    ensure => present,
-    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-    line   => "Le_LinkOrder='https://acme-v02.api.letsencrypt.org/acme/order/554069336/90785049486'",
-    match  => '^Le_LinkOrder=',
-    notify => Exec["acme-${hostname}-renew"],
-  }
-
-  file_line { "acme-${hostname}-linkcert":
-    ensure => present,
-    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-    line   => "Le_LinkCert='https://acme-v02.api.letsencrypt.org/acme/cert/03a896fa7cc0f374caacf403e2baca1bc7a5'",
-    match  => '^Le_LinkCert=',
-    notify => Exec["acme-${hostname}-renew"],
-  }
-
   file_line { "acme-${hostname}-domain":
     ensure => present,
     path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
