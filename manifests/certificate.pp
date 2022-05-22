@@ -31,6 +31,38 @@ define acme::certificate (
     ensure => file,
   }
 
+  file_line { "acme-${hostname}-api":
+    ensure => present,
+    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
+    line   => "Le_API='https://acme-v02.api.letsencrypt.org/directory'",
+    match  => '^Le_API=',
+    notify => Exec["acme-${hostname}-renew"],
+  }
+
+  file_line { "acme-${hostname}-orderfinalize":
+    ensure => present,
+    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
+    line   => "Le_OrderFinalize='https://acme-v02.api.letsencrypt.org/acme/finalize/554069336/90785049486'",
+    match  => '^Le_OrderFinalize=',
+    notify => Exec["acme-${hostname}-renew"],
+  }
+
+  file_line { "acme-${hostname}-linkorder":
+    ensure => present,
+    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
+    line   => "Le_LinkOrder='https://acme-v02.api.letsencrypt.org/acme/order/554069336/90785049486'",
+    match  => '^Le_LinkOrder=',
+    notify => Exec["acme-${hostname}-renew"],
+  }
+
+  file_line { "acme-${hostname}-linkcert":
+    ensure => present,
+    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
+    line   => "Le_LinkCert='https://acme-v02.api.letsencrypt.org/acme/cert/03a896fa7cc0f374caacf403e2baca1bc7a5'",
+    match  => '^Le_LinkCert=',
+    notify => Exec["acme-${hostname}-renew"],
+  }
+
   file_line { "acme-${hostname}-domain":
     ensure => present,
     path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
@@ -92,12 +124,12 @@ define acme::certificate (
   }
 
   exec { "acme-${hostname}-renew":
-    command     => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force",
+    command     => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force --server letsencrypt",
     refreshonly => true,
   }
 
   -> exec { "acme-${hostname}-issue":
-    command => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force",
+    command => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force --server letsencrypt",
     creates => "/opt/certs/${hostname}/${hostname}/${hostname}.cer",
   }
 }
