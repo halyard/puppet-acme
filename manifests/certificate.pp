@@ -124,12 +124,12 @@ define acme::certificate (
   }
 
   exec { "acme-${hostname}-renew":
-    command     => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force --server letsencrypt",
+    command     => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force",
     refreshonly => true,
   }
 
   -> exec { "acme-${hostname}-issue":
-    command => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force --server letsencrypt",
+    command => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all --force",
     creates => "/opt/certs/${hostname}/${hostname}/${hostname}.cer",
   }
 }
