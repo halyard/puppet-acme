@@ -73,7 +73,7 @@ define acme::certificate (
     }
   }
 
-  $b64_reloadcmd = chomp(base64('encode', $reloadcmd))
+  $b64_reloadcmd = chomp(base64('encode', $reloadcmd, 'strict'))
 
   file_line { "acme-${hostname}-reloadcmd":
     ensure => present,
