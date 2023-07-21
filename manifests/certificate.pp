@@ -14,12 +14,12 @@ define acme::certificate (
 ) {
   include acme
 
-  $hook_file = "${path}/hook-${domain}"
+  $hook_file = "${acme::path}/hook-${hostname}"
 
   $args = [
     '/usr/bin/lego',
-    'run'
-    "--path=${path}",
+    'run',
+    "--path=${acme::path}",
     '--dns=route53',
     "--domains=${hostname}",
     '--accept-tos',
@@ -36,6 +36,6 @@ define acme::certificate (
 
   -> exec { "lego-issue-${hostname}":
     command => $args,
-    creates => "${path}/${domain}.crt"
+    creates => "${acme::path}/${hostname}.crt",
   }
 }
