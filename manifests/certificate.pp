@@ -1,113 +1,41 @@
 # @summary Create a certificate
 #
-# @param reloadcmd defines how to reload services after the certificate is updated
-# @param keypath defines where to install the key file
-# @param fullchainpath defines where to install the full cert chain
-# @param account defines the credentials file contents
-# @param challengealias defines an alias domain to use for the validation
+# @param hook_script sets the code to run after the certificate is updated
+# @param aws_access_key_id sets the AWS key to use for Route53 challenge
+# @param aws_secret_access_key sets the AWS secret key to use for the Route53 challenge
+# @param email sets the contact address for the certificate
 # @param hostname (namevar) sets the CN of the certificate
 define acme::certificate (
-  String $reloadcmd,
-  String $keypath,
-  String $fullchainpath,
-  Optional[String] $account = undef,
-  Optional[String] $challengealias = undef,
+  String $hook_script,
+  String $aws_access_key_id,
+  String $aws_secret_access_key,
+  String $email,
   String $hostname = $title,
 ) {
   include acme
 
-  file { ["/opt/certs/${hostname}", "/opt/certs/${hostname}/${hostname}"]:
-    ensure => directory,
-  }
+  $hook_file = "${path}/hook-${domain}"
 
-  file { "/opt/certs/${hostname}/account.conf":
+  $args = [
+    '/usr/bin/lego',
+    'run'
+    "--path=${path}",
+    '--dns=route53',
+    "--domains=${hostname}",
+    '--accept-tos',
+    "--email=${email}",
+    "--run-hook=${hook_file}",
+    '--no-bundle',
+  ]
+
+  file { $hook_file:
     ensure  => file,
-    mode    => '0400',
-    content => $account,
-    notify  => Exec["acme-${hostname}-renew"],
+    content => $hook_script,
+    mode    => '0755',
   }
 
-  file { "/opt/certs/${hostname}/${hostname}/${hostname}.conf":
-    ensure => file,
-  }
-
-  file_line { "acme-${hostname}-api":
-    ensure => present,
-    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-    line   => "Le_API='https://acme-v02.api.letsencrypt.org/directory'",
-    match  => '^Le_API=',
-    notify => Exec["acme-${hostname}-renew"],
-  }
-
-  file_line { "acme-${hostname}-domain":
-    ensure => present,
-    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-    line   => "Le_Domain='${hostname}'",
-    match  => '^Le_Domain=',
-    notify => Exec["acme-${hostname}-renew"],
-  }
-
-  file_line { "acme-${hostname}-alt":
-    ensure => present,
-    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-    line   => "Le_Alt='no'",
-    match  => '^Le_Alt=',
-    notify => Exec["acme-${hostname}-renew"],
-  }
-
-  file_line { "acme-${hostname}-webroot":
-    ensure => present,
-    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-    line   => "Le_Webroot='dns_aws'",
-    match  => '^Le_Webroot=',
-    notify => Exec["acme-${hostname}-renew"],
-  }
-
-  if $challengealias {
-    file_line { "acme-${hostname}-challengealias":
-      ensure => present,
-      path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-      line   => "Le_ChallengeAlias='${challengealias},'",
-      match  => '^Le_ChallengeAlias=',
-      notify => Exec["acme-${hostname}-renew"],
-    }
-  }
-
-  $b64_reloadcmd = chomp(base64('encode', $reloadcmd, 'strict'))
-
-  file_line { "acme-${hostname}-reloadcmd":
-    ensure => present,
-    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-    line   => "Le_ReloadCmd='__ACME_BASE64__START_${b64_reloadcmd}__ACME_BASE64__END_'",
-    match  => '^Le_ReloadCmd=',
-    notify => Exec["acme-${hostname}-renew"],
-  }
-
-  file_line { "acme-${hostname}-realkeypath":
-    ensure => present,
-    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-    line   => "Le_RealKeyPath='${keypath}'",
-    match  => '^Le_RealKeyPath=',
-    notify => Exec["acme-${hostname}-renew"],
-  }
-
-  file_line { "acme-${hostname}-realfullchainpath":
-    ensure => present,
-    path   => "/opt/certs/${hostname}/${hostname}/${hostname}.conf",
-    line   => "Le_RealFullChainPath=${fullchainpath}",
-    match  => '^Le_RealFullChainPath=',
-    notify => Exec["acme-${hostname}-renew"],
-  }
-
-  exec { "acme-${hostname}-renew":
-    command     => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all",
-    path        => '/usr/bin',
-    refreshonly => true,
-  }
-
-  -> exec { "acme-${hostname}-issue":
-    command => "/opt/acme/acme.sh --config-home /opt/certs/${hostname} --renew-all",
-    path    => '/usr/bin',
-    creates => "/opt/certs/${hostname}/${hostname}/${hostname}.cer",
+  -> exec { "lego-issue-${hostname}":
+    command => $args,
+    creates => "${path}/${domain}.crt"
   }
 }

@@ -1,17 +1,14 @@
 # @summary Configure x509 certificates with ACME
 #
 # @param certificates sets the certificates to create
+# @param path sets the storage directory for certs
 class acme (
   Hash[String, Hash] $certificates = {},
+  String $path = '/opt/lego',
 ) {
-  vcsrepo { '/opt/acme':
-    ensure   => present,
-    provider => git,
-    source   => 'https://github.com/akerl/acme.sh',
-    revision => 'master',
-  }
+  package { 'lego': }
 
-  file { '/opt/certs':
+  file { $path:
     ensure => directory,
     owner  => 'root',
     group  => 'root',
