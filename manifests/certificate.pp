@@ -23,7 +23,7 @@ define acme::certificate (
     "--domains=${hostname}",
     '--accept-tos',
     "--email=${email}",
-    "run"
+    'run',
     "--run-hook=${hook_file}",
   ]
 
