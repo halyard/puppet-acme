@@ -4,27 +4,32 @@
 # @param aws_access_key_id sets the AWS key to use for Route53 challenge
 # @param aws_secret_access_key sets the AWS secret key to use for the Route53 challenge
 # @param email sets the contact address for the certificate
+# @param key_type sets the public key type
 # @param hostname (namevar) sets the CN of the certificate
 define acme::certificate (
   String $hook_script,
   String $aws_access_key_id,
   String $aws_secret_access_key,
   String $email,
+  String $key_type = 'ec256',
   String $hostname = $title,
 ) {
   include acme
 
-  $hook_file = "${acme::path}/hooks/${hostname}"
-  $creds_file = "${acme::path}/creds/${hostname}"
-  $email_file = "${acme::path}/email/${hostname}"
+  $path = $acme::path
+
+  $hook_file = "${path}/hooks/${hostname}"
+  $creds_file = "${path}/creds/${hostname}"
+  $renew_file = "${path}/renew/${hostname}"
 
   $args = [
     '/usr/bin/lego',
-    "--path=${acme::path}",
+    "--path=${path}",
     '--dns=route53',
     "--domains=${hostname}",
     '--accept-tos',
     "--email=${email}",
+    "--key-type=${key_type}",
     'run',
     "--run-hook=${hook_file}",
   ]
@@ -35,10 +40,10 @@ define acme::certificate (
     mode    => '0600',
   }
 
-  -> file { $email_file:
+  -> file { $renew_file:
     ensure  => file,
-    content => $email,
-    mode    => '0600',
+    content => template('acme/renew.sh.erb'),
+    mode    => '0700',
   }
 
   -> file { $hook_file:
@@ -49,7 +54,7 @@ define acme::certificate (
 
   -> exec { "lego-issue-${hostname}":
     command     => $args,
-    creates     => "${acme::path}/certificates/${hostname}.crt",
+    creates     => "${path}/certificates/${hostname}.crt",
     environment => ["AWS_SHARED_CREDENTIALS_FILE=${creds_file}"],
   }
 }

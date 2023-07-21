@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+export AWS_SHARED_CREDENTIALS_FILE="<%= @creds_file %>"
+
+/usr/bin/lego \
+  "--path=<%= @path %>" \
+  --dns=route53 \
+  "--domains=<%= @hostname %>" \
+  --accept-tos \
+  "--email=<%= @email %>" \
+  "--key-type=<%= @key_type %>" \
+  renew \
+  --no-random-sleep \
+  "--renew-hook=<%= @hook_file %>"
+

@@ -2,15 +2,6 @@
 
 set -eou pipefail
 
-for domain in $(ls "<%= @path %>/creds") ; do
-  AWS_SHARED_CREDENTIALS_FILE=creds/$domain \
-  /usr/bin/lego \
-  "--path=<%= @path %>" \
-  --dns=route53 \
-  --domains=$domain \
-  --accept-tos \
-  "--email=$(cat <%= @path %>/email/$domain)" \
-  renew \
-  --no-random-sleep \
-  "--renew-hook=<%= @path %>/hooks/$domain"
+for domain in $(ls "<%= @path %>/renew") ; do
+  "$domain"
 done

@@ -12,21 +12,23 @@ class acme (
     ensure => directory,
     owner  => 'root',
     group  => 'root',
+    mode   => '0700',
   }
 
-  file { ["${path}/hooks", "${path}/creds", "${path}/email"]:
+  file { ["${path}/hooks", "${path}/creds", "${path}/renew"]:
     ensure  => directory,
     owner   => 'root',
     group   => 'root',
     recurse => true,
     purge   => true,
+    mode    => '0700',
   }
 
   file { '/opt/lego/renew_all':
     ensure  => file,
     owner   => 'root',
     group   => 'root',
-    mode    => '0755',
+    mode    => '0700',
     content => template('acme/renew_all.erb'),
   }
 
