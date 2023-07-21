@@ -2,6 +2,12 @@
 
 set -eou pipefail
 
+if [[ "$1" == "force" ]] ; then
+  force="--days=100"
+else
+  force=""
+fi
+
 export AWS_SHARED_CREDENTIALS_FILE="<%= @creds_file %>"
 
 /usr/bin/lego \
@@ -13,5 +19,6 @@ export AWS_SHARED_CREDENTIALS_FILE="<%= @creds_file %>"
   "--key-type=<%= @key_type %>" \
   renew \
   --no-random-sleep \
-  "--renew-hook=<%= @hook_file %>"
+  "--renew-hook=<%= @hook_file %>" \
+  "$force"
 
