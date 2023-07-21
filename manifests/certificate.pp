@@ -18,12 +18,12 @@ define acme::certificate (
 
   $args = [
     '/usr/bin/lego',
-    'run',
     "--path=${acme::path}",
     '--dns=route53',
     "--domains=${hostname}",
     '--accept-tos',
     "--email=${email}",
+    "run"
     "--run-hook=${hook_file}",
   ]
 
