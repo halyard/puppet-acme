@@ -25,7 +25,6 @@ define acme::certificate (
     '--accept-tos',
     "--email=${email}",
     "--run-hook=${hook_file}",
-    '--no-bundle',
   ]
 
   file { $hook_file:
