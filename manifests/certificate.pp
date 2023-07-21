@@ -15,6 +15,7 @@ define acme::certificate (
   include acme
 
   $hook_file = "${acme::path}/hook-${hostname}"
+  $creds_file = "${acme::path}/creds-${hostname}"
 
   $args = [
     '/usr/bin/lego',
@@ -27,7 +28,13 @@ define acme::certificate (
     "--run-hook=${hook_file}",
   ]
 
-  file { $hook_file:
+  file { $creds_file:
+    ensure  => file,
+    content => template('acme/creds.erb'),
+    mode    => '0600',
+  }
+
+  -> file { $hook_file:
     ensure  => file,
     content => $hook_script,
     mode    => '0755',
