@@ -14,6 +14,14 @@ class acme (
     group  => 'root',
   }
 
+  file { ["${path}/hooks", "${path}/creds"]:
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    recurse => true,
+    purge   => true,
+  }
+
   file { '/opt/certs/renew_all':
     ensure => file,
     owner  => 'root',

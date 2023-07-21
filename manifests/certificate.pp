@@ -14,8 +14,8 @@ define acme::certificate (
 ) {
   include acme
 
-  $hook_file = "${acme::path}/hook-${hostname}"
-  $creds_file = "${acme::path}/creds-${hostname}"
+  $hook_file = "${acme::path}/hooks/${hostname}"
+  $creds_file = "${acme::path}/creds/${hostname}"
 
   $args = [
     '/usr/bin/lego',
@@ -42,7 +42,7 @@ define acme::certificate (
 
   -> exec { "lego-issue-${hostname}":
     command     => $args,
-    creates     => "${acme::path}/${hostname}.crt",
+    creates     => "${acme::path}/certificates/${hostname}.crt",
     environment => ["AWS_SHARED_CREDENTIALS_FILE=${creds_file}"],
   }
 }
