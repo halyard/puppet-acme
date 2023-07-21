@@ -41,7 +41,8 @@ define acme::certificate (
   }
 
   -> exec { "lego-issue-${hostname}":
-    command => $args,
-    creates => "${acme::path}/${hostname}.crt",
+    command     => $args,
+    creates     => "${acme::path}/${hostname}.crt",
+    environment => ["AWS_SHARED_CREDENTIALS_FILE=${creds_file}"],
   }
 }
