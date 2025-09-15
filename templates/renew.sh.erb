@@ -20,6 +20,7 @@ export AWS_SHARED_CREDENTIALS_FILE="<%= @creds_file %>"
   "--key-type=<%= @key_type %>" \
   renew \
   --no-random-sleep \
+  "--profile=<%= @profile %>" \
   "--renew-hook=<%= @hook_file %>" \
   "$force"
 

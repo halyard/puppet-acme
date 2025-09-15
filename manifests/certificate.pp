@@ -6,6 +6,7 @@
 # @param email sets the contact address for the certificate
 # @param key_type sets the public key type
 # @param hostname (namevar) sets the CN of the certificate
+# @param profile sets the ACME server profile to request for the certificate
 define acme::certificate (
   String $hook_script,
   String $aws_access_key_id,
@@ -13,6 +14,7 @@ define acme::certificate (
   String $email,
   String $key_type = 'ec256',
   String $hostname = $title,
+  String $profile = 'tlsserver',
 ) {
   include acme
 
@@ -32,6 +34,7 @@ define acme::certificate (
     "--key-type=${key_type}",
     'run',
     "--run-hook=${hook_file}",
+    "--profile=${profile}",
   ]
 
   file { $creds_file:
