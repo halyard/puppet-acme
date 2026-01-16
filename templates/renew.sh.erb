@@ -4,9 +4,9 @@ set -eou pipefail
 
 
 if [[ "${1:-}" == "force" ]] ; then
-  force="--days=100"
+  force="--days 100"
 else
-  force=""
+  force="--dynamic"
 fi
 
 export AWS_SHARED_CREDENTIALS_FILE="<%= @creds_file %>"

@@ -14,7 +14,7 @@ define acme::certificate (
   String $email,
   String $key_type = 'ec256',
   String $hostname = $title,
-  String $profile = 'tlsserver',
+  String $profile = 'shortlived',
 ) {
   include acme
 
