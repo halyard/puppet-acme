@@ -4,7 +4,7 @@ set -eou pipefail
 
 
 if [[ "${1:-}" == "force" ]] ; then
-  force="--days 100"
+  force="--days=100"
 else
   force="--dynamic"
 fi
