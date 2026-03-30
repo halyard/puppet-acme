@@ -1,6 +1,6 @@
 {
   "name": "halyard-acme",
-  "version": "0.0.43",
+  "version": "0.0.44",
   "author": "Les Aker",
   "license": "MIT",
   "summary": "Configure ACME TLS certificates",
@@ -13,7 +13,5 @@
       "version_requirement": ">= 5.0.0 < 6.0.0"
     }
   ],
-  "operatingsystem_support": [
-
-  ]
+  "operatingsystem_support": []
 }
