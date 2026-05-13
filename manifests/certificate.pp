@@ -24,19 +24,6 @@ define acme::certificate (
   $creds_file = "${path}/creds/${hostname}"
   $renew_file = "${path}/renew/${hostname}"
 
-  $args = [
-    '/usr/bin/lego',
-    "--path=${path}",
-    '--dns=route53',
-    "--domains=${hostname}",
-    '--accept-tos',
-    "--email=${email}",
-    "--key-type=${key_type}",
-    'run',
-    "--run-hook=${hook_file}",
-    "--profile=${profile}",
-  ]
-
   file { $creds_file:
     ensure  => file,
     content => template('acme/creds.erb'),
@@ -56,8 +43,7 @@ define acme::certificate (
   }
 
   -> exec { "lego-issue-${hostname}":
-    command     => $args,
+    command     => [$renew_file],
     creates     => "${path}/certificates/${hostname}.crt",
-    environment => ["AWS_SHARED_CREDENTIALS_FILE=${creds_file}"],
   }
 }

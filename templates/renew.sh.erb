@@ -4,23 +4,24 @@ set -eou pipefail
 
 
 if [[ "${1:-}" == "force" ]] ; then
-  force="--days=100"
+  force="--renew-days=100"
 else
-  force="--dynamic"
+  force=""
 fi
 
 export AWS_SHARED_CREDENTIALS_FILE="<%= @creds_file %>"
 
 /usr/bin/lego \
+  run \
   "--path=<%= @path %>" \
   --dns=route53 \
   "--domains=<%= @hostname %>" \
   --accept-tos \
   "--email=<%= @email %>" \
   "--key-type=<%= @key_type %>" \
-  renew \
   --no-random-sleep \
   "--profile=<%= @profile %>" \
-  "--renew-hook=<%= @hook_file %>" \
+  "--deploy-hook=<%= @hook_file %>" \
+  "--dns.propagation.disable-rns" \
   "$force"
 
