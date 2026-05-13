@@ -43,7 +43,7 @@ define acme::certificate (
   }
 
   -> exec { "lego-issue-${hostname}":
-    command     => [$renew_file],
-    creates     => "${path}/certificates/${hostname}.crt",
+    command => [$renew_file],
+    creates => "${path}/certificates/${hostname}.crt",
   }
 }
